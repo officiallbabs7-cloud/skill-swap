@@ -47,21 +47,18 @@ const Dashboard = () => {
       const fileExt = file.name.split(".").pop();
       const filePath = `${user.id}/${Math.random()}.${fileExt}`;
 
-      // 1. Upload image to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
       const { data: urlData } = supabase.storage
         .from("avatars")
         .getPublicUrl(filePath);
 
       const publicUrl = urlData.publicUrl;
 
-      // 3. Update profiles table
       const { error: updateError } = await supabase
         .from("profiles")
         .update({ avatar_url: publicUrl })
@@ -105,12 +102,18 @@ const Dashboard = () => {
     );
   }
 
+  const navItems = [
+    { label: "Manage My Skills", path: "/skills" },
+    { label: "Browse Skills", path: "/browse" },
+    { label: "My Requests", path: "/requests" },
+  ];
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white text-white p-6">
       <div className="w-full max-w-sm p-8 border border-neutral-700 rounded-3xl bg-black">
 
-        {/* Profile Avatar Section */}
-        <div className="flex flex-col items-center mb-8">
+        
+        <div className="flex flex-col items-center mb-6">
           <label className="relative group cursor-pointer">
             <div className="w-24 h-24 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-3xl font-bold overflow-hidden shadow-lg">
               {avatarUrl ? (
@@ -123,15 +126,13 @@ const Dashboard = () => {
                 <span>{username ? username[0].toUpperCase() : "?"}</span>
               )}
 
-              {/* Hover Dark Overlay */}
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-full">
-                <span className="text-xs font-semibold text-white">
+                <span className="text-sm font-semibold text-white">
                   {uploading ? "Uploading..." : "Change"}
                 </span>
               </div>
             </div>
 
-            {/* Camera Icon Badge */}
             <div className="absolute bottom-0 right-0 p-2 bg-white text-black rounded-full border border-neutral-700 shadow-md group-hover:bg-neutral-200 transition">
               <svg
                 className="w-4 h-4"
@@ -158,75 +159,70 @@ const Dashboard = () => {
             />
           </label>
 
-          <p className="text-neutral-400 text-sm mt-3">{user?.email}</p>
+          <p className="text-white font-bold text-base mt-3">
+            {username || "Your name"}
+          </p>
+          <p className="text-neutral-500 text-sm">{user?.email}</p>
         </div>
 
-        {/* Profile Form */}
-        <form onSubmit={handleSave} className="flex flex-col gap-4">
+        <form onSubmit={handleSave} className="flex flex-col gap-3">
           <div>
-            <label className="text-sm text-neutral-400 mb-1 block">
+            <label className="text-xs uppercase tracking-wide text-neutral-500 mb-1 block">
               Username
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-3 bg-black border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-white"
+              className="w-full p-3 bg-neutral-950 border border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
               required
             />
           </div>
 
           <div>
-            <label className="text-sm text-neutral-400 mb-1 block">
+            <label className="text-xs uppercase tracking-wide text-neutral-500 mb-1 block">
               Bio
             </label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              rows={4}
+              rows={3}
               placeholder="Tell others a bit about yourself..."
-              className="w-full p-3 bg-black border border-white rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-white"
+              className="w-full p-3 bg-neutral-950 border border-neutral-700 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-white transition"
             />
           </div>
 
           {message && (
-            <p className="text-sm text-center text-neutral-300">{message}</p>
+            <p className="text-xs text-center text-neutral-400">{message}</p>
           )}
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full mt-4 border border-neutral-700 text-white py-3 rounded-xl font-extrabold hover:bg-neutral-900 transition cursor-pointer"
+            className="w-full bg-white text-black py-2.5 rounded-xl text-base font-bold hover:bg-neutral-200 transition cursor-pointer"
           >
             {saving ? "Saving..." : "Save Profile"}
           </button>
         </form>
 
-        {/* Navigation Buttons */}
-        <button
-          onClick={() => navigate("/skills")}
-          className="w-full mt-4 bg-white text-black py-3 rounded-xl font-extrabold hover:bg-gray-300 transition cursor-pointer"
-        >
-          Manage My Skills
-        </button>
+        
+        <div className="border-t border-neutral-800 my-7" />
 
-        <button
-          onClick={() => navigate("/browse")}
-          className="w-full mt-3 border border-neutral-700 text-white py-3 rounded-xl font-extrabold hover:bg-neutral-900 transition cursor-pointer"
-        >
-          Browse Skills
-        </button>
-
-        <button
-          onClick={() => navigate("/requests")}
-          className="w-full mt-4 bg-white text-black py-3 rounded-xl font-extrabold hover:bg-gray-300 transition cursor-pointer"
-        >
-          My Requests
-        </button>
+        <div className="flex flex-col gap-2">
+          {navItems.map((item) => (
+            <button
+              key={item.path}
+              onClick={() => navigate(item.path)}
+              className="w-full text-left px-4 py-3 rounded-xl text-sm font-medium text-white bg-neutral-950 border border-neutral-800 hover:bg-neutral-900 hover:border-neutral-900 transition cursor-pointer"
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
 
         <button
           onClick={handleSignOut}
-          className="w-full mt-4 border border-neutral-700 text-white py-3 rounded-xl font-extrabold hover:bg-neutral-900 transition cursor-pointer"
+          className="w-full mt-6 text-center text-sm text-neutral-500 hover:text-red-500 transition cursor-pointer"
         >
           Sign Out
         </button>

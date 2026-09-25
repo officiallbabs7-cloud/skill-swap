@@ -55,50 +55,81 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white text-white">
-      <div className="w-full max-w-sm p-8 border border-neutral-700 rounded-3xl bg-black">
-        <h1 className="text-3xl font-extrabold text-center mb-6">
-          {resetMode
-            ? "Reset Password"
-            : isSignUp
-            ? "Create an account"
-            : "Welcome back"}
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-white p-6">
+      <div className="w-full max-w-sm p-8 border border-neutral-700 rounded-3xl bg-black text-white">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-extrabold">
+            {resetMode
+              ? "Reset your password"
+              : isSignUp
+                ? "Create an account"
+                : "Welcome back"}
+          </h1>
+          <p className="text-neutral-500 text-sm mt-1">
+            {resetMode
+              ? "We'll email you a link to reset it"
+              : isSignUp
+                ? "Start swapping skills today"
+                : "Log in to your Skill Swap account"}
+          </p>
+        </div>
 
         {!resetMode ? (
           <>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <input
-                type="email"
-                placeholder="Email"
-                className="p-3 bg-black border border-white rounded-xl"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-              <div className="relative">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+              <div>
+                <label className="text-xs uppercase tracking-wide text-neutral-500 mb-1 block">
+                  Email
+                </label>
                 <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Password"
-                  className="w-full p-3 pr-11 bg-black border border-white rounded-xl"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  type="email"
+                  placeholder="you@example.com"
+                  className="w-full p-3 bg-neutral-950 border border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
-                  minLength={6}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
-                >
-                  {showPassword ? (
-                    <RiEyeOffLine size={20} />
-                  ) : (
-                    <RiEyeLine size={20} />
-                  )}
-                </button>
               </div>
+
+              <div>
+                <label className="text-xs uppercase tracking-wide text-neutral-500 mb-1 block">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••••"
+                    className="w-full p-3 pr-11 bg-neutral-950 border border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white transition"
+                  >
+                    {showPassword ? (
+                      <RiEyeOffLine size={20} />
+                    ) : (
+                      <RiEyeLine size={20} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {!isSignUp && (
+                <div className="text-right -mt-1">
+                  <button
+                    type="button"
+                    onClick={() => setResetMode(true)}
+                    className="text-sm text-neutral-500 hover:text-white underline cursor-pointer transition"
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+              )}
 
               {errorMsg && (
                 <p className="text-red-500 text-sm text-center">{errorMsg}</p>
@@ -107,25 +138,13 @@ const Auth = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-white text-black py-3 rounded-xl font-extrabold hover:bg-neutral-500 transition cursor-pointer"
+                className="w-full bg-white text-black py-3 rounded-xl text-base font-bold hover:bg-neutral-200 transition cursor-pointer mt-1"
               >
                 {loading ? "Please wait..." : isSignUp ? "Sign Up" : "Log In"}
               </button>
             </form>
 
-            {!isSignUp && (
-              <p className="text-right text-sm mt-3">
-                <button
-                  type="button"
-                  onClick={() => setResetMode(true)}
-                  className="underline text-white hover:text-neutral-500 cursor-pointer"
-                >
-                  Forgot password?
-                </button>
-              </p>
-            )}
-
-            <p className="text-center text-sm text-neutral-500 mt-6 cursor-pointer">
+            <p className="text-center text-sm text-neutral-500 mt-6">
               {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
               <button
                 onClick={() => setIsSignUp(!isSignUp)}
@@ -138,30 +157,33 @@ const Auth = () => {
         ) : (
           <div>
             {resetSent ? (
-              <p className="text-center text-neutral-300">
+              <p className="text-center text-sm text-neutral-400">
                 Check your email for a reset link.
               </p>
             ) : (
-              <form onSubmit={handleReset} className="flex flex-col gap-4">
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="p-3 bg-black border border-white rounded-xl"
-                  required
-                />
+              <form onSubmit={handleReset} className="flex flex-col gap-3">
+                <div>
+                  <label className="text-base uppercase tracking-wide text-neutral-500 mb-1 block">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 bg-neutral-950 border border-neutral-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white transition"
+                    required
+                  />
+                </div>
 
                 {errorMsg && (
-                  <p className="text-red-500 text-sm text-center">
-                    {errorMsg}
-                  </p>
+                  <p className="text-red-500 text-xs text-center">{errorMsg}</p>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-white text-black py-3 rounded-xl font-extrabold hover:bg-neutral-500 transition cursor-pointer"
+                  className="w-full bg-white text-black py-3 rounded-xl text-sm font-bold hover:bg-neutral-200 transition cursor-pointer mt-1"
                 >
                   {loading ? "Sending..." : "Send Reset Link"}
                 </button>
@@ -176,7 +198,7 @@ const Auth = () => {
                   setResetSent(false);
                   setErrorMsg("");
                 }}
-                className="underline text-white hover:text-neutral-500 cursor-pointer"
+                className="text-neutral-500 hover:text-white underline cursor-pointer transition"
               >
                 Back to Log In
               </button>
